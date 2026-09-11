@@ -184,28 +184,50 @@ col3.metric("가장 낮은 시군구", f"{min_row['시도']} {min_row['시군구
 st.divider()
 
 
-# 7. Plotly 단계구분도 생성
+# 7. Plotly 단계구분도 생성 (choropleth_map 사용 및 호환성 처리)
 center_info = SIDO_CENTERS.get(selected_sido, SIDO_CENTERS['전국'])
 
-fig = px.choropleth_mapbox(
-    df_sigungu,
-    geojson=geojson,
-    locations='시군구코드',
-    featureidkey='properties.코드',
-    color='지표_구간',
-    color_discrete_map=color_discrete_map,
-    category_orders={'지표_구간': labels},
-    hover_name='시군구',
-    hover_data={
-        '시도': True,
-        target_col: ':.1f%',
-        '시군구코드': False,
-        '지표_구간': False
-    },
-    center={"lat": center_info['lat'], "lon": center_info['lon']},
-    zoom=center_info['zoom'],
-    mapbox_style="white-bg"
-)
+# Plotly 버전에 따라 px.choropleth_map 또는 px.choropleth_mapbox 호출
+if hasattr(px, "choropleth_map"):
+    fig = px.choropleth_map(
+        df_sigungu,
+        geojson=geojson,
+        locations='시군구코드',
+        featureidkey='properties.코드',
+        color='지표_구간',
+        color_discrete_map=color_discrete_map,
+        category_orders={'지표_구간': labels},
+        hover_name='시군구',
+        hover_data={
+            '시도': True,
+            target_col: ':.1f%',
+            '시군구코드': False,
+            '지표_구간': False
+        },
+        center={"lat": center_info['lat'], "lon": center_info['lon']},
+        zoom=center_info['zoom'],
+        map_style="white-bg"
+    )
+else:
+    fig = px.choropleth_mapbox(
+        df_sigungu,
+        geojson=geojson,
+        locations='시군구코드',
+        featureidkey='properties.코드',
+        color='지표_구간',
+        color_discrete_map=color_discrete_map,
+        category_orders={'지표_구간': labels},
+        hover_name='시군구',
+        hover_data={
+            '시도': True,
+            target_col: ':.1f%',
+            '시군구코드': False,
+            '지표_구간': False
+        },
+        center={"lat": center_info['lat'], "lon": center_info['lon']},
+        zoom=center_info['zoom'],
+        mapbox_style="white-bg"
+    )
 
 fig.update_layout(
     margin={"r": 0, "t": 0, "l": 0, "b": 0},
