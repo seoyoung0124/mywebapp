@@ -35,7 +35,7 @@ st.markdown(
     }
     </style>
     """,
-    unsafe_allow_dict_only=True,
+    unsafe_allow_html=True,
 )
 
 # 데이터 베이스 (MBTI별 추천)
